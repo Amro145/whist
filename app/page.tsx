@@ -109,7 +109,7 @@ const WhistGame = () => {
           <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
               <div className="flex items-center gap-3">
-                <span className="text-slate-400">الفريق الطالب:</span>
+                <span className="text-slate-400">الفريق المسمي:</span>
                 <select 
                   className="bg-slate-800 p-2 rounded-lg border border-slate-700 outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => setBid({ ...bid, team: e.target.value as 't1' | 't2' })}
@@ -119,7 +119,7 @@ const WhistGame = () => {
                 </select>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-slate-400">الطلب:</span>
+                <span className="text-slate-400">التسميه:</span>
                 <input 
                   type="number" min="7" max="13" value={bid.count}
                   className="w-16 bg-slate-800 p-2 rounded-lg border border-slate-700 text-center text-xl font-bold"
