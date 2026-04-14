@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const WhistGame = () => {
   const [teamNames, setTeamNames] = useState<{ t1: string; t2: string }>({ t1: 'الفريق الأول', t2: 'الفريق الثاني' });
@@ -9,6 +9,29 @@ const WhistGame = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [rounds, setRounds] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
+
+  // 1. تحميل البيانات عند أول تشغيل للمتصفح فقط
+  useEffect(() => {
+    const savedScores = localStorage.getItem('whist_scores');
+    const savedNames = localStorage.getItem('whist_names');
+    const savedRounds = localStorage.getItem('whist_rounds');
+    const savedStarted = localStorage.getItem('whist_started');
+
+    if (savedScores) setScores(JSON.parse(savedScores));
+    if (savedNames) setTeamNames(JSON.parse(savedNames));
+    if (savedRounds) setRounds(parseInt(savedRounds));
+    if (savedStarted) setIsGameStarted(JSON.parse(savedStarted));
+  }, []);
+
+  // 2. حفظ البيانات تلقائياً عند أي تغيير في الـ State
+  useEffect(() => {
+    if (isGameStarted) {
+      localStorage.setItem('whist_scores', JSON.stringify(scores));
+      localStorage.setItem('whist_names', JSON.stringify(teamNames));
+      localStorage.setItem('whist_rounds', rounds.toString());
+      localStorage.setItem('whist_started', JSON.stringify(isGameStarted));
+    }
+  }, [scores, teamNames, rounds, isGameStarted]);
 
   const handleRoundResult = (actualEaten: number) => {
     if (winner) return;
@@ -35,10 +58,13 @@ const WhistGame = () => {
 
   const resetGame = () => {
     if (confirm('هل أنت متأكد من العودة وتصفير النقاط؟')) {
+      // مسح الـ LocalStorage تماماً
+      localStorage.clear();
       setScores({ t1: 0, t2: 0 });
       setRounds(0);
       setWinner(null);
       setBid({ team: 't1', count: 7 });
+      setIsGameStarted(false); // نرجعه لشاشة إدخال الأسماء
     }
   };
 
