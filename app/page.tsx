@@ -41,7 +41,7 @@ const WhistGame = () => {
 
     setScores((prev) => {
       const updated = { ...prev };
-      
+
       if (isSuccess) {
         // لو نجح: الفريق الطالب بياخد اللي أكله فعلياً
         updated[bid.team] += actualEaten;
@@ -56,9 +56,9 @@ const WhistGame = () => {
       // فحص الفوز أو الخسارة الفادحة
       if (updated.t1 >= 25 || updated.t1 <= -25) setWinner(teamNames.t1);
       else if (updated.t2 >= 25 || updated.t2 <= -25) setWinner(teamNames.t2);
-      
+
       setRounds(r => r + 1);
-      
+
       // منطق "السيك" (لو الفريق الطالب ما أكل ولا أكلة أو أكل الـ 13 كلهم)
       if (actualEaten === 13 || actualEaten === 0) {
         setShowSik(true);
@@ -67,7 +67,7 @@ const WhistGame = () => {
           resetGame(true); // تصفير تلقائي بعد السيك
         }, 5000);
       }
-      
+
       return updated;
     });
   };
@@ -90,17 +90,17 @@ const WhistGame = () => {
         <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
           <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">إعداد اللعبة</h2>
           <div className="space-y-4">
-            <input 
+            <input
               type="text" placeholder="اسم الفريق الأول"
               className="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              onChange={(e) => setTeamNames({...teamNames, t1: e.target.value || 'الفريق الأول'})}
+              onChange={(e) => setTeamNames({ ...teamNames, t1: e.target.value || 'الفريق الأول' })}
             />
-            <input 
+            <input
               type="text" placeholder="اسم الفريق الثاني"
               className="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-              onChange={(e) => setTeamNames({...teamNames, t2: e.target.value || 'الفريق الثاني'})}
+              onChange={(e) => setTeamNames({ ...teamNames, t2: e.target.value || 'الفريق الثاني' })}
             />
-            <button 
+            <button
               onClick={() => setIsGameStarted(true)}
               className="w-full py-4 bg-gradient-to-r from-blue-600 to-emerald-600 rounded-xl font-bold text-lg hover:opacity-90 active:scale-95 transition-all shadow-lg"
             >
@@ -146,9 +146,22 @@ const WhistGame = () => {
                   <option value="t2">{teamNames.t2}</option>
                 </select>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="text-slate-400">التسميه:</span>
-                <input type="number" min="7" max="13" value={bid.count} className="w-16 bg-slate-800 p-2 rounded-lg border border-slate-700 text-center text-xl font-bold" onChange={(e) => setBid({...bid, count: parseInt(e.target.value) || 7})} />
+              <div className="flex flex-col gap-3">
+                <span className="text-slate-400 text-sm">التسمية (الطلب):</span>
+                <div className="flex flex-wrap gap-2">
+                  {[7, 8, 9, 10, 11, 12, 13].map((num) => (
+                    <button
+                      key={num}
+                      onClick={() => setBid({ ...bid, count: num })}
+                      className={`flex-1 min-w-[45px] h-12 rounded-xl font-bold transition-all border ${bid.count === num
+                          ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] scale-105"
+                          : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500"
+                        }`}
+                    >
+                      {num}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
