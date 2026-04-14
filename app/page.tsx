@@ -1,19 +1,20 @@
+"use client";
 import React, { useState } from 'react';
 
 const WhistGame = () => {
   // الحالة الأساسية للعبة
-  const [teamNames, setTeamNames] = useState({ t1: 'الفريق 1', t2: 'الفريق 2' });
-  const [scores, setScores] = useState({ t1: 0, t2: 0 });
-  const [bid, setBid] = useState({ team: 't1', count: 7 });
+  const [teamNames, setTeamNames] = useState<{ t1: string; t2: string }>({ t1: 'الفريق 1', t2: 'الفريق 2' });
+  const [scores, setScores] = useState<{ t1: number; t2: number }>({ t1: 0, t2: 0 });
+  const [bid, setBid] = useState<{ team: 't1' | 't2'; count: number }>({ team: 't1', count: 7 });
   const [isGameStarted, setIsGameStarted] = useState(false);
-  const [winner, setWinner] = useState(null);
+  const [winner, setWinner] = useState<string | null>(null);
 
   // دالة تسجيل النقاط ومراقبة النهاية (25 أو -25)
-  const handleRoundResult = (actualEaten) => {
+  const handleRoundResult = (actualEaten: number) => {
     if (winner) return; // وقف الحساب لو في فائز أصلاً
 
     const isSuccess = actualEaten >= bid.count;
-    const opponent = bid.team === 't1' ? 't2' : 't1';
+    const opponent: 't1' | 't2' = bid.team === 't1' ? 't2' : 't1';
 
     setScores((prev) => {
       const updatedScores = { ...prev };
@@ -85,7 +86,7 @@ const WhistGame = () => {
           <h3>تسجيل الجولة:</h3>
           <div>
             الطلب: 
-            <select onChange={(e) => setBid({ ...bid, team: e.target.value })}>
+            <select onChange={(e) => setBid({ ...bid, team: e.target.value as 't1' | 't2' })}>
               <option value="t1">{teamNames.t1}</option>
               <option value="t2">{teamNames.t2}</option>
             </select>
