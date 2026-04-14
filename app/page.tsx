@@ -7,6 +7,7 @@ const WhistGame = () => {
   const [scores, setScores] = useState<{ t1: number; t2: number }>({ t1: 0, t2: 0 });
   const [bid, setBid] = useState<{ team: 't1' | 't2'; count: number }>({ team: 't1', count: 7 });
   const [isGameStarted, setIsGameStarted] = useState(false);
+  const [rounds, setRounds] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
 
   const handleRoundResult = (actualEaten: number) => {
@@ -27,8 +28,18 @@ const WhistGame = () => {
       if (updated.t1 >= 25 || updated.t1 <= -25) setWinner(teamNames.t1);
       else if (updated.t2 >= 25 || updated.t2 <= -25) setWinner(teamNames.t2);
       
+      setRounds(r => r + 1);
       return updated;
     });
+  };
+
+  const resetGame = () => {
+    if (confirm('هل أنت متأكد من العودة وتصفير النقاط؟')) {
+      setScores({ t1: 0, t2: 0 });
+      setRounds(0);
+      setWinner(null);
+      setBid({ team: 't1', count: 7 });
+    }
   };
 
   // شاشة البداية
@@ -61,8 +72,22 @@ const WhistGame = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8" dir="rtl">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 flex flex-col items-center" dir="rtl">
+      <div className="max-w-2xl w-full mx-auto">
+        {/* شريط التحكم العلوي */}
+        <div className="flex items-center justify-between mb-8 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+          <div className="flex items-center gap-4">
+            <span className="bg-slate-800 px-4 py-1.5 rounded-full text-sm font-bold border border-slate-700">
+              الجولة: {rounds}
+            </span>
+          </div>
+          <button 
+            onClick={resetGame}
+            className="text-xs font-bold px-4 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-all"
+          >
+            تصفير اللعبة ↺
+          </button>
+        </div>
         {/* لوحة النتائج */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className={`p-6 rounded-2xl border-2 transition-all ${scores.t1 < 0 ? 'border-red-500/50 bg-red-500/5' : 'border-blue-500/50 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.1)]'}`}>
@@ -98,7 +123,11 @@ const WhistGame = () => {
                 <input 
                   type="number" min="7" max="13" value={bid.count}
                   className="w-16 bg-slate-800 p-2 rounded-lg border border-slate-700 text-center text-xl font-bold"
-                  onChange={(e) => setBid({...bid, count: parseInt(e.target.value)})}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (val >= 7 && val <= 13) setBid({...bid, count: val});
+                    else if (isNaN(val)) setBid({...bid, count: 7});
+                  }}
                 />
               </div>
             </div>
