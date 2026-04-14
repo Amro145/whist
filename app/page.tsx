@@ -9,6 +9,7 @@ const WhistGame = () => {
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [rounds, setRounds] = useState(0);
   const [winner, setWinner] = useState<string | null>(null);
+  const [showSik, setShowSik] = useState(false);
 
   // 1. تحميل البيانات عند أول تشغيل للمتصفح فقط
   useEffect(() => {
@@ -52,6 +53,22 @@ const WhistGame = () => {
       else if (updated.t2 >= 25 || updated.t2 <= -25) setWinner(teamNames.t2);
       
       setRounds(r => r + 1);
+      
+      // احتفال لو جاب 13 أو 0
+      if (actualEaten === 13 || actualEaten === 0) {
+        setShowSik(true);
+        setTimeout(() => {
+          setShowSik(false);
+          // العودة لبداية اللعبة تلقائياً بعد السيك
+          localStorage.clear();
+          setScores({ t1: 0, t2: 0 });
+          setRounds(0);
+          setWinner(null);
+          setBid({ team: 't1', count: 7 });
+          setIsGameStarted(false);
+        }, 5000);
+      }
+      
       return updated;
     });
   };
@@ -173,6 +190,23 @@ const WhistGame = () => {
           </div>
         )}
       </div>
+
+      {/* شاشة احتفال السيك */}
+      {showSik && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in zoom-in duration-300">
+          <h1 className="text-8xl md:text-9xl font-black text-yellow-400 drop-shadow-[0_0_30px_rgba(250,204,21,0.5)] animate-bounce mb-8">
+            سييييييييييك
+          </h1>
+          <div className="text-9xl animate-spin duration-1000">
+            😂
+          </div>
+          <div className="flex gap-4 mt-8">
+            <span className="text-6xl animate-bounce delay-75">🤣</span>
+            <span className="text-6xl animate-bounce delay-150">🔥</span>
+            <span className="text-6xl animate-bounce delay-300">🃏</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
