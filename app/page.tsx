@@ -1,109 +1,123 @@
 "use client";
+
 import React, { useState } from 'react';
 
 const WhistGame = () => {
-  // الحالة الأساسية للعبة
-  const [teamNames, setTeamNames] = useState<{ t1: string; t2: string }>({ t1: 'الفريق 1', t2: 'الفريق 2' });
+  const [teamNames, setTeamNames] = useState<{ t1: string; t2: string }>({ t1: 'الفريق الأول', t2: 'الفريق الثاني' });
   const [scores, setScores] = useState<{ t1: number; t2: number }>({ t1: 0, t2: 0 });
   const [bid, setBid] = useState<{ team: 't1' | 't2'; count: number }>({ team: 't1', count: 7 });
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [winner, setWinner] = useState<string | null>(null);
 
-  // دالة تسجيل النقاط ومراقبة النهاية (25 أو -25)
   const handleRoundResult = (actualEaten: number) => {
-    if (winner) return; // وقف الحساب لو في فائز أصلاً
+    if (winner) return;
 
     const isSuccess = actualEaten >= bid.count;
     const opponent: 't1' | 't2' = bid.team === 't1' ? 't2' : 't1';
 
     setScores((prev) => {
-      const updatedScores = { ...prev };
-
+      const updated = { ...prev };
       if (isSuccess) {
-        updatedScores[bid.team] += actualEaten;
+        updated[bid.team] += actualEaten;
       } else {
-        updatedScores[bid.team] -= bid.count;
-        updatedScores[opponent] += actualEaten;
+        updated[bid.team] -= bid.count;
+        updated[opponent] += actualEaten;
       }
 
-      // التحقق من شروط النهاية
-      if (updatedScores.t1 >= 25 || updatedScores.t1 <= -25) setWinner(teamNames.t1);
-      else if (updatedScores.t2 >= 25 || updatedScores.t2 <= -25) setWinner(teamNames.t2);
-
-      return updatedScores;
+      if (updated.t1 >= 25 || updated.t1 <= -25) setWinner(teamNames.t1);
+      else if (updated.t2 >= 25 || updated.t2 <= -25) setWinner(teamNames.t2);
+      
+      return updated;
     });
   };
 
+  // شاشة البداية
   if (!isGameStarted) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px', direction: 'rtl' }}>
-        <h2>إعداد لعبة الويست 🃏</h2>
-        <input 
-          placeholder="اسم الفريق الأول" 
-          onChange={(e) => setTeamNames({...teamNames, t1: e.target.value})}
-          style={{ padding: '10px', margin: '5px' }}
-        />
-        <input 
-          placeholder="اسم الفريق الثاني" 
-          onChange={(e) => setTeamNames({...teamNames, t2: e.target.value})}
-          style={{ padding: '10px', margin: '5px' }}
-        />
-        <br />
-        <button 
-          onClick={() => setIsGameStarted(true)}
-          style={{ padding: '10px 30px', marginTop: '20px', cursor: 'pointer' }}
-        >
-          ابدأ اللعب
-        </button>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 antialiased text-white" dir="rtl">
+        <div className="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
+          <h2 className="text-3xl font-bold mb-6 text-center bg-linear-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">إعداد اللعبة</h2>
+          <div className="space-y-4">
+            <input 
+              type="text" placeholder="اسم الفريق الأول"
+              className="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              onChange={(e) => setTeamNames({...teamNames, t1: e.target.value})}
+            />
+            <input 
+              type="text" placeholder="اسم الفريق الثاني"
+              className="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+              onChange={(e) => setTeamNames({...teamNames, t2: e.target.value})}
+            />
+            <button 
+              onClick={() => setIsGameStarted(true)}
+              className="w-full py-4 bg-linear-to-r from-blue-600 to-emerald-600 rounded-xl font-bold text-lg hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-blue-500/20"
+            >
+              ابدأ الملحمة 🃏
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px', direction: 'rtl', fontFamily: 'Arial' }}>
-      <h1 style={{ textAlign: 'center' }}>حاسبة الويست</h1>
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8" dir="rtl">
+      <div className="max-w-2xl mx-auto">
+        {/* لوحة النتائج */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className={`p-6 rounded-2xl border-2 transition-all ${scores.t1 < 0 ? 'border-red-500/50 bg-red-500/5' : 'border-blue-500/50 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.1)]'}`}>
+            <p className="text-sm text-slate-400 mb-1">{teamNames.t1}</p>
+            <h2 className="text-5xl font-black">{scores.t1}</h2>
+          </div>
+          <div className={`p-6 rounded-2xl border-2 transition-all ${scores.t2 < 0 ? 'border-red-500/50 bg-red-500/5' : 'border-emerald-500/50 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.1)]'}`}>
+            <p className="text-sm text-slate-400 mb-1">{teamNames.t2}</p>
+            <h2 className="text-5xl font-black">{scores.t2}</h2>
+          </div>
+        </div>
 
-      {/* لوحة النتائج */}
-      <div style={{ display: 'flex', justifyContent: 'space-around', background: '#f0f0f0', padding: '20px', borderRadius: '15px' }}>
-        <div>
-          <h3>{teamNames.t1}</h3>
-          <h2 style={{ color: scores.t1 < 0 ? 'red' : 'green' }}>{scores.t1}</h2>
-        </div>
-        <div style={{ fontSize: '40px' }}>VS</div>
-        <div>
-          <h3>{teamNames.t2}</h3>
-          <h2 style={{ color: scores.t2 < 0 ? 'red' : 'green' }}>{scores.t2}</h2>
-        </div>
+        {winner ? (
+          <div className="text-center p-12 bg-slate-900 rounded-3xl border border-yellow-500/50">
+            <h2 className="text-4xl font-bold text-yellow-400 mb-4 animate-bounce">🏆 الفائز: {winner}</h2>
+            <button onClick={() => window.location.reload()} className="px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-slate-200 transition-colors">لعبة جديدة</button>
+          </div>
+        ) : (
+          <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400">الفريق الطالب:</span>
+                <select 
+                  className="bg-slate-800 p-2 rounded-lg border border-slate-700 outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setBid({ ...bid, team: e.target.value as 't1' | 't2' })}
+                >
+                  <option value="t1">{teamNames.t1}</option>
+                  <option value="t2">{teamNames.t2}</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400">الطلب:</span>
+                <input 
+                  type="number" min="7" max="13" value={bid.count}
+                  className="w-16 bg-slate-800 p-2 rounded-lg border border-slate-700 text-center text-xl font-bold"
+                  onChange={(e) => setBid({...bid, count: parseInt(e.target.value)})}
+                />
+              </div>
+            </div>
+
+            <p className="text-center text-slate-500 mb-4 text-sm font-medium tracking-widest uppercase">الأكلات الفعلية</p>
+            <div className="grid grid-cols-7 gap-2">
+              {[...Array(14).keys()].map(n => (
+                <button 
+                  key={n} 
+                  onClick={() => handleRoundResult(n)}
+                  className="h-12 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-blue-600 hover:scale-110 active:scale-90 transition-all font-bold border border-slate-700"
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-
-      {winner ? (
-        <div style={{ textAlign: 'center', marginTop: '30px', color: 'blue' }}>
-          <h2>🎉 مبروك الفوز لـ {winner}! 🎉</h2>
-          <button onClick={() => window.location.reload()}>لعبة جديدة</button>
-        </div>
-      ) : (
-        <div style={{ marginTop: '30px', border: '1px solid #ddd', padding: '20px' }}>
-          <h3>تسجيل الجولة:</h3>
-          <div>
-            الطلب: 
-            <select onChange={(e) => setBid({ ...bid, team: e.target.value as 't1' | 't2' })}>
-              <option value="t1">{teamNames.t1}</option>
-              <option value="t2">{teamNames.t2}</option>
-            </select>
-            <input 
-              type="number" min="7" max="13" value={bid.count}
-              onChange={(e) => setBid({...bid, count: parseInt(e.target.value)})}
-              style={{ width: '50px', marginRight: '10px' }}
-            />
-          </div>
-          <p>اختار عدد الأكلات الفعلي:</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px' }}>
-            {[...Array(14).keys()].map(n => (
-              <button key={n} onClick={() => handleRoundResult(n)} style={{ padding: '10px' }}>{n}</button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
